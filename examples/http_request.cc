@@ -2,10 +2,7 @@
 #include "../net_error.h"
 #include "../socket.h"
 
-#include <string>
 #include <cstdio>
-#include <cerrno>
-#include <cstring>
 #include <cstdlib>
 
 #define BUF_LEN 16384
@@ -23,19 +20,18 @@ int main(int argc, char **argv)
                     });
   net::Socket s = net::Socket(argv[1], atoi(argv[2]));
   if (!s) {
-    puts("Error!1");
-    printf("%d %s\n", s.error(), strerror(errno));
+    puts("Error making socket!");
     return 1;
   }
   if (request.write_to_socket(s)) {
-    puts("Error!");
+    puts("Error writing to socket!");
     return 1;
   }
   char buf[BUF_LEN];
   int len;
   len = s.read(buf, BUF_LEN - 1);
   if (len < 0) {
-    puts("Error!3");
+    puts("Error reading from socket!");
     return 1;
   }
   buf[len] = 0;
