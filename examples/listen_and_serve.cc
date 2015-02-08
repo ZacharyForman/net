@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <future>
 
-#define BUF_LEN 4096
-
 int main(int argc, char **argv)
 {
   int port = 8080;
