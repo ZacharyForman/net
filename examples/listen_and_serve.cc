@@ -13,13 +13,32 @@ int main(int argc, char **argv)
     port = atoi(argv[1]);
   }
 
-  const auto handler = [](net::Socket s) {
-    char buf[BUF_LEN];
-    int len;
-    len = s.read(buf, BUF_LEN - 1);
-    buf[len] = 0;
-    printf("Got: %s\n", buf);
-    s.write(buf, len);
+  const auto handler = [argv](net::Socket s) {
+    net::HttpRequest r;
+    net::Error e = r.read_from_socket(s);
+    if (e != net::OK) {
+      printf("Error - %d\n", e);
+      return;
+    }
+    printf("%s\n", r.str().c_str());
+    net::HttpStatus response =
+    net::HttpStatus(200, "OK",
+                    {
+                      {"Content-Type", "text/html"},
+                      {"Server", argv[0]}
+                    },
+                    "<html>"
+                      "<body>"
+                        "<p>"
+                          "Hello World!"
+                        "</p>"
+                      "</body>"
+                    "</html>");
+    e = response.write_to_socket(s);
+    if (e != net::OK) {
+      printf("Error - %d\n", e);
+      return;
+    }
   };
 
   std::future<net::Error> f = net::listen_and_serve(port, 5, handler);

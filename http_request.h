@@ -14,16 +14,18 @@ namespace net {
 
 class HttpRequest {
 public:
+  HttpRequest() = default;
   HttpRequest(const ::std::string &method,
               const ::std::string &path,
               const ::std::map<::std::string, ::std::string> &headers,
               const ::std::string &msg = "",
-              const ::std::string &version = "1.1");
+              const ::std::string &version = "HTTP/1.1");
   HttpRequest(HttpRequest &&request) = default;
   HttpRequest(const HttpRequest &request) = default;
 
   ::std::string str() const;
   Error write_to_socket(Socket s) const;
+  Error read_from_socket(Socket s);
 
   ::std::string method;
   ::std::string path;

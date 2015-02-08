@@ -28,7 +28,7 @@ HttpStatus::HttpStatus(
 
 ::std::string HttpStatus::str() const {
   ::std::stringstream ret;
-  ret << "HTTP/" << version << " " << status << " " << reason << "\r\n";
+  ret << version << " " << status << " " << reason << "\r\n";
   for (const auto &header : headers) {
     ret << header.first << ": " << header.second << "\r\n";
   }

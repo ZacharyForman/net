@@ -20,7 +20,7 @@ enum State {
   State st = q1;
   ::std::string key, val;
   char *start;
-  for (;*str;) {
+  for (;*str || st == q5;) {
     switch (st) {
       case q1: {
         if (*str == ':') {

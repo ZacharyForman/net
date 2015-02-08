@@ -5,6 +5,8 @@
 #error "Requires C++11 features"
 #else
 
+#include "http_request.h"
+#include "http_status.h"
 #include "net_error.h"
 #include "socket.h"
 #include "serversocket.h"

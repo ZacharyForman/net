@@ -25,7 +25,9 @@ enum Error {
   NO_MEMORY,
   NO_FDS,
   INVALID_ARGS,
-  CONN_TERMINATED
+  CONN_TERMINATED,
+  BAD_HEADERS,
+  BAD_METHOD
 };
 
 Error net_err();

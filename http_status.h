@@ -14,10 +14,11 @@ namespace net {
 
 class HttpStatus {
 public:
+  HttpStatus() = default;
   HttpStatus(int status, const ::std::string &reason,
              const ::std::map<::std::string, ::std::string> &headers,
              const ::std::string &msg = "",
-             const ::std::string &version = "1.1");
+             const ::std::string &version = "HTTP/1.1");
   HttpStatus(HttpStatus &&request) = default;
   HttpStatus(const HttpStatus &request) = default;
 
