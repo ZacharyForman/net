@@ -1,3 +1,5 @@
+#if __cplusplus >= 201100L
+
 #include "net_error.h"
 #include "socket.h"
 
@@ -13,8 +15,6 @@
 
 #include <atomic>
 #include <mutex>
-
-#if __cplusplus >= 201100L
 
 namespace net {
 

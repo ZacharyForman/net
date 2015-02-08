@@ -1,9 +1,12 @@
 #ifndef HTTP_REQUEST_H
 #define HTTP_REQUEST_H
 
+#if __cplusplus < 201100L
+#error "Requires C++11 features"
+#else
+
 #include "socket.h"
 
-#include <atomic>
 #include <map>
 #include <string>
 
@@ -20,7 +23,7 @@ public:
   HttpRequest(const HttpRequest &request) = default;
 
   ::std::string str() const;
-  Error write_to_socket(Socket s, int buffer_size = 1024) const;
+  Error write_to_socket(Socket s) const;
 
   ::std::string method;
   ::std::string path;
@@ -30,5 +33,7 @@ public:
 };
 
 } // net
+
+#endif // __cplusplus >= 201100L
 
 #endif // HTTP_REQUEST_H

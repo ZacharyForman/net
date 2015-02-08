@@ -1,6 +1,6 @@
 #if __cplusplus >= 201100L
 
-#include "http_request.h"
+#include "http_status.h"
 #include "net_error.h"
 #include "socket.h"
 
@@ -12,23 +12,23 @@
 
 namespace net {
 
-HttpRequest::HttpRequest(
-    const ::std::string &method,
-    const ::std::string &path,
+HttpStatus::HttpStatus(
+    int status,
+    const ::std::string &reason,
     const ::std::map<::std::string, ::std::string> &headers,
     const ::std::string &msg,
     const ::std::string &version)
 {
-  this->method = method;
-  this->path = path;
+  this->status = status;
+  this->reason = reason;
   this->headers = headers;
   this->msg = msg;
   this->version = version;
 }
 
-::std::string HttpRequest::str() const {
+::std::string HttpStatus::str() const {
   ::std::stringstream ret;
-  ret << method << " " << path << " HTTP/" << version << "\r\n";
+  ret << "HTTP/" << version << " " << status << " " << reason << "\r\n";
   for (const auto &header : headers) {
     ret << header.first << ": " << header.second << "\r\n";
   }
@@ -37,7 +37,7 @@ HttpRequest::HttpRequest(
   return ret.str();
 }
 
-Error HttpRequest::write_to_socket(Socket s) const
+Error HttpStatus::write_to_socket(Socket s) const
 {
   ::std::string msg = str();
   int len = s.write(msg.c_str(), msg.length());

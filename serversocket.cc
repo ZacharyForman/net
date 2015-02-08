@@ -1,3 +1,5 @@
+#if __cplusplus >= 201100L
+
 #include "net_error.h"
 #include "serversocket.h"
 
@@ -12,8 +14,6 @@
 
 #include <cstdio>
 #include <errno.h>
-
-#if __cplusplus >= 201100L
 
 namespace net {
 

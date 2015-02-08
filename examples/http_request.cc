@@ -29,12 +29,12 @@ int main(int argc, char **argv)
   }
   char buf[BUF_LEN];
   int len;
-  len = s.read(buf, BUF_LEN - 1);
+  while ((len = s.read(buf, BUF_LEN - 1)) > 0) {
+    buf[len] = 0;
+    printf("%s", buf);
+  }
   if (len < 0) {
     puts("Error reading from socket!");
     return 1;
   }
-  buf[len] = 0;
-  printf("%s\n", buf);
-
 }

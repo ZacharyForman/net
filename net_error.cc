@@ -1,3 +1,4 @@
+#if __cplusplus >= 201100L
 #include "net_error.h"
 
 #include <netinet/in.h>
@@ -49,3 +50,4 @@ Error net_err()
 
 } // net
 
+#endif
