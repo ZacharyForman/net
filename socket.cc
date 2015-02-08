@@ -2,12 +2,14 @@
 #include "socket.h"
 
 #include <arpa/inet.h>
-
+#include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include <string.h>
+#include <stdio.h>
 
 #include <atomic>
 #include <mutex>
@@ -24,18 +26,42 @@ Socket::Socket(const Socket &s)
   if (ref != nullptr) (*ref)++;
 }
 
+namespace {
+int connect_socket(int *sock, const char *host, const char *port)
+{
+  int sockfd;
+  struct addrinfo hints;
+  struct addrinfo *result, *a;
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = 0;
+  hints.ai_protocol = 0;
+  if (getaddrinfo(host, port, &hints, &result)) {
+    return -1;
+  }
+  for (a = result; a != nullptr; a = a->ai_next) {
+    sockfd = socket(a->ai_family, a->ai_socktype, a->ai_protocol);
+    int opt;
+    if (sockfd == -1) continue;
+    if (!setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)))
+      if (connect(sockfd, a->ai_addr, a->ai_addrlen) != -1) break;
+    close(sockfd);
+  }
+  freeaddrinfo(result);
+  if (a == nullptr) {
+    return -1;
+  }
+  *sock = sockfd;
+  return 0;
+}
+} // namespace
+
 Socket::Socket(const char *host, int port)
 {
-  struct sockaddr_in addr;
-  memset((char *)&addr,0,sizeof(addr));
-
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = inet_addr(host);
-
-  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) goto err;
-  if (connect(sock, (sockaddr*)&addr, sizeof(addr)) < 0) goto err;
-
+  char buf[30];
+  ::sprintf(buf, "%d", port);
+  if (connect_socket(&sock, host, buf)) goto err;
   ref = new ::std::atomic<int>(1);
   err = OK;
   return;
