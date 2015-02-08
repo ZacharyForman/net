@@ -6,7 +6,7 @@
 
 #include <errno.h>
 
-namespace utils {
+namespace net {
 
 Error net_err()
 {
@@ -47,5 +47,5 @@ Error net_err()
   }
 }
 
-} // utils
+} // net
 

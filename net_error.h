@@ -7,7 +7,7 @@
 
 #include <errno.h>
 
-namespace utils {
+namespace net {
 
 const int PORT_MAX = 65535;
 
@@ -30,6 +30,6 @@ enum Error {
 
 Error net_err();
 
-} // utils
+} // net
 
 #endif // NET_ERROR_H

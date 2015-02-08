@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     port = atoi(argv[1]);
   }
 
-  const auto handler = [](utils::Socket s) {
+  const auto handler = [](net::Socket s) {
     char buf[BUF_LEN];
     int len;
     len = s.read(buf, BUF_LEN - 1);
@@ -22,6 +22,6 @@ int main(int argc, char **argv)
     s.write(buf, len);
   };
 
-  std::future<utils::Error> f = utils::listen_and_serve(port, 5, handler);
+  std::future<net::Error> f = net::listen_and_serve(port, 5, handler);
   printf("Result was: %d\n", f.get());
 }

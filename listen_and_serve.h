@@ -10,7 +10,7 @@
 #include <future>
 #include <thread>
 
-namespace utils {
+namespace net {
 
 template<typename Handler>
 ::std::future<Error> listen_and_serve(int port, int queue_length, Handler f)
@@ -32,7 +32,7 @@ template<typename Handler>
   });
 }
 
-} // utils
+} // net
 
 #endif // __cplusplus < 201100L
 

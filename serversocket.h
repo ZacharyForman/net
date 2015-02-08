@@ -11,7 +11,7 @@
 #include <atomic>
 #include <mutex>
 
-namespace utils {
+namespace net {
 class ServerSocket {
 public:
   ServerSocket(const ServerSocket &s);
@@ -33,7 +33,7 @@ private:
   int sock;
 };
 
-} // utils
+} // net
 
 #endif // __cplusplus < 201100L
 

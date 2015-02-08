@@ -15,7 +15,7 @@
 
 #if __cplusplus >= 201100L
 
-namespace utils {
+namespace net {
 
 ServerSocket::ServerSocket(const ServerSocket &ss)
 {
@@ -90,6 +90,6 @@ Error ServerSocket::error() const
   return err;
 }
 
-} //utils
+} //net
 
 #endif // __cplusplus >= 201100L
