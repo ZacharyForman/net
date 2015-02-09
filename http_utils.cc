@@ -73,6 +73,41 @@ err:
   *end = nullptr;
   return ret;
 }
+namespace internals {
+
+#define BUF_LEN 1024
+
+int get_header(Socket s, ::std::string &req)
+{
+  int total_len = 0;
+  char buf[BUF_LEN];
+  int len = 0;
+
+  while ((len = s.read(buf, BUF_LEN - 1)) > 0) {
+    buf[len] = 0;
+    req += buf;
+
+    auto it = req.find("\r\n\r\n", total_len);
+    total_len += len;
+
+    if (it != std::string::npos) return it;
+  }
+}
+
+void read_remainder(Socket s, ::std::string &rem, int length)
+{
+  char buf[BUF_LEN];
+  int len = 0;
+  while (length && (len = s.read(buf, BUF_LEN - 1)) > 0) {
+    buf[len] = 0;
+    rem += buf;
+    length -= len;
+  }
+}
+
+#undef BUF_LEN
+
+} // internal
 
 } // net
 

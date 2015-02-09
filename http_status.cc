@@ -1,5 +1,6 @@
 #if __cplusplus >= 201100L
 
+#include "http_utils.h"
 #include "http_status.h"
 #include "net_error.h"
 #include "socket.h"
@@ -44,6 +45,49 @@ Error HttpStatus::write_to_socket(Socket s) const
   if (len < 0) {
     return s.error();
   }
+  return OK;
+}
+
+
+Error HttpStatus::read_from_socket(Socket s)
+{
+  ::std::string stat;
+  ::std::string statmsg;
+  int pos = internals::get_header(s, stat);
+  if (s.error() != OK) {
+    return s.error();
+  }
+
+  const char *req = stat.c_str();
+  while (*req && *req != ' ') version += *req++;
+  if (*req) req++;
+  while (*req && *req != ' ') statmsg += *req++;
+  status = ::atoi(statmsg.c_str());
+  if (*req) req++;
+  while (*req && *req != '\r') reason += *req++;
+  if (*req) req++;
+  if (*req && *req == '\n') req++;
+
+  if (*req == 0) {
+    return BAD_HEADERS;
+  }
+
+  const char *end;
+  headers = read_headers(req, &end);
+
+  if (headers.size() == 0) {
+    return BAD_HEADERS;
+  }
+
+  msg = end;
+  int remaining_length =
+    ::atoi(headers["Content-Length"].c_str()) - msg.length();
+
+  internals::read_remainder(s, msg, remaining_length);
+  if (s.error() != OK) {
+    return s.error();
+  }
+
   return OK;
 }
 

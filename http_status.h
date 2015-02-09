@@ -24,6 +24,7 @@ public:
 
   ::std::string str() const;
   Error write_to_socket(Socket s) const;
+  Error read_from_socket(Socket s);
 
   int status;
   ::std::string reason;
