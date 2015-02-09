@@ -77,10 +77,13 @@ Error HttpRequest::read_from_socket(Socket s)
   }
 
   msg = end;
-  int remaining_length =
-    ::atoi(headers["Content-Length"].c_str()) - msg.length();
+  int remaining_length = headers.count("Content-Length") ?
+    ::atoi(headers["Content-Length"].c_str()) - msg.length() :
+    0;
 
-  internals::read_remainder(s, msg, remaining_length);
+  if (remaining_length > 0) {
+    internals::read_remainder(s, msg, remaining_length);
+  }
   if (s.error() != OK) {
     return s.error();
   }

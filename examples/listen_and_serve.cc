@@ -1,8 +1,19 @@
 #include "../net.h"
 #include <string>
+#include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <future>
+
+namespace patch {
+template<typename T>
+::std::string to_string(T v)
+{
+  std::stringstream ss;
+  ss << v;
+  return ss.str();
+}
+}
 
 int main(int argc, char **argv)
 {
@@ -19,19 +30,15 @@ int main(int argc, char **argv)
       return;
     }
     printf("%s\n", r.str().c_str());
+    std::string msg ="<html><body><p>Hello World!</p></body></html>";
     net::HttpStatus response =
-    net::HttpStatus(200, "OK",
+      net::HttpStatus(200, "OK",
                     {
                       {"Content-Type", "text/html"},
+                      {"Content-Length", patch::to_string(msg.length())},
                       {"Server", argv[0]}
                     },
-                    "<html>"
-                      "<body>"
-                        "<p>"
-                          "Hello World!"
-                        "</p>"
-                      "</body>"
-                    "</html>");
+                    msg);
     e = response.write_to_socket(s);
     if (e != net::OK) {
       printf("Error - %d\n", e);

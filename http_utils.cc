@@ -40,7 +40,7 @@ enum State {
           key.clear();
           val.clear();
           st = q3;
-        } else {
+        } else if (val != "" || *str != ' ') {
           val += *str;
         }
         break;
