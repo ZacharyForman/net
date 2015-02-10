@@ -14,13 +14,14 @@ enum State {
 
 }
 
-::std::map<::std::string, ::std::string> read_headers(const char *str, const char **end)
+::std::map<::std::string, ::std::string>
+    read_headers(const char *str, const char **end)
 {
   ::std::map<::std::string, ::std::string> ret;
   State st = q1;
   ::std::string key, val;
   char *start;
-  for (;*str || st == q5;) {
+  while(*str || st == q5) {
     switch (st) {
       case q1: {
         if (*str == ':') {
