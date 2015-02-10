@@ -7,10 +7,14 @@
 
 #include "http_request.h"
 #include "http_status.h"
+#include "serversocket.h"
 
 #include <memory>
+#include <string>
 
 namespace net {
+
+namespace internals {
 
 class Handler {
 public:
@@ -47,7 +51,22 @@ private:
   std::shared_ptr<Handler> h;
 };
 
+} // internals
+
 class HttpServer {
+public:
+  class Options;
+  typedef internals::HttpHandler Handler;
+  typedef ::std::map<::std::string, Handler> HandlerMap;
+  HttpServer(const HandlerMap &handlers, Handler default_handler,
+             const Options &options);
+private:
+  HandlerMap handlers;
+  Handler default_handler;
+  ServerSocket s;
+};
+
+class HttpServer::Options {
 
 };
 

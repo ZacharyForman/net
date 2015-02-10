@@ -5,7 +5,7 @@
 
 int main()
 {
-  std::map<std::string, net::HttpHandler> m =
+  net::HttpServer::HandlerMap m =
   {
     {
       "/path1",
