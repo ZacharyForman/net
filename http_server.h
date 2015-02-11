@@ -7,10 +7,12 @@
 
 #include "http_request.h"
 #include "http_status.h"
+#include "net_error.h"
 #include "serversocket.h"
 
 #include <memory>
 #include <string>
+#include <thread>
 
 namespace net {
 
@@ -55,19 +57,23 @@ private:
 
 class HttpServer {
 public:
-  class Options;
+  struct Options;
   typedef internals::HttpHandler Handler;
   typedef ::std::map<::std::string, Handler> HandlerMap;
   HttpServer(const HandlerMap &handlers, Handler default_handler,
              const Options &options);
+  Error error();
+  std::future<Error> start();
+  Error stop();
 private:
   HandlerMap handlers;
   Handler default_handler;
   ServerSocket s;
 };
 
-class HttpServer::Options {
-
+struct HttpServer::Options {
+  int concurrent_connections;
+  bool die_on_error;
 };
 
 } // net
