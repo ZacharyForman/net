@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
 namespace net {
 
@@ -63,8 +64,8 @@ public:
   HttpServer(const HandlerMap &handlers, Handler default_handler,
              const Options &options);
   Error error();
-  std::future<Error> start();
-  Error stop();
+  ::std::future<Error> start();
+  ::std::future<Error> stop();
 private:
   HandlerMap handlers;
   Handler default_handler;
@@ -72,8 +73,10 @@ private:
 };
 
 struct HttpServer::Options {
+  int port;
   int concurrent_connections;
   bool die_on_error;
+  ::std::vector<::std::string> blacklist;
 };
 
 } // net
