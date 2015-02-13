@@ -63,7 +63,7 @@ public:
   typedef ::std::map<::std::string, Handler> HandlerMap;
   HttpServer(const HandlerMap &handlers, Handler default_handler,
              const Options &options);
-  Error error();
+  Error error() const;
   ::std::future<Error> start();
   ::std::future<Error> stop();
 private:
@@ -73,9 +73,9 @@ private:
 };
 
 struct HttpServer::Options {
-  int port;
-  int concurrent_connections;
-  bool die_on_error;
+  int port = -1;
+  int concurrent_connections = -1;
+  bool die_on_error = true;
   ::std::vector<::std::string> blacklist;
 };
 
