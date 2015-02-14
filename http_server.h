@@ -61,8 +61,10 @@ public:
   struct Options;
   typedef internals::HttpHandler Handler;
   typedef ::std::map<::std::string, Handler> HandlerMap;
-  HttpServer(const HandlerMap &handlers, Handler default_handler,
-             const Options &options);
+  HttpServer(const HandlerMap &handlers,
+             Handler default_handler,
+             const Options &options = Options::default_options);
+  ~HttpServer();
   Error error() const;
   ::std::future<Error> start();
   ::std::future<Error> stop();
@@ -77,6 +79,7 @@ struct HttpServer::Options {
   int concurrent_connections = -1;
   bool die_on_error = true;
   ::std::vector<::std::string> blacklist;
+  HttpServer::Options default_options = {80,1,true,{}};
 };
 
 } // net
