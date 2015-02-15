@@ -10,10 +10,10 @@
 #include "net_error.h"
 #include "serversocket.h"
 
+#include <future>
 #include <memory>
 #include <string>
 #include <thread>
-#include <vector>
 
 namespace net {
 
@@ -63,23 +63,22 @@ public:
   typedef ::std::map<::std::string, Handler> HandlerMap;
   HttpServer(const HandlerMap &handlers,
              Handler default_handler,
-             const Options &options = Options::default_options);
-  ~HttpServer();
+             const Options &options);
+  ~HttpServer() = default;
   Error error() const;
   ::std::future<Error> start();
-  ::std::future<Error> stop();
 private:
   HandlerMap handlers;
   Handler default_handler;
-  ServerSocket s;
+  ServerSocket ss;
+  Error err;
+  bool die_on_error;
 };
 
 struct HttpServer::Options {
-  int port = -1;
-  int concurrent_connections = -1;
+  int port = 8080;
+  int queue_length = 4;
   bool die_on_error = true;
-  ::std::vector<::std::string> blacklist;
-  HttpServer::Options default_options = {80,1,true,{}};
 };
 
 } // net
