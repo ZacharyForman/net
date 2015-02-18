@@ -15,8 +15,8 @@ namespace net {
 
 class FileServer {
 public:
+  explicit FileServer(const ::std::string &root);
   HttpStatus operator()(HttpRequest request) const;
-  explicit FileHandler(const ::std::string &root);
 private:
   ::std::string root;
 };
