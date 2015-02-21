@@ -1,5 +1,6 @@
 #if __cplusplus >= 201100L
 
+#include "default_handlers.h"
 #include "http_request.h"
 #include "http_status.h"
 
