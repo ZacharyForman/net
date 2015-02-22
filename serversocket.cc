@@ -71,7 +71,7 @@ ServerSocket::operator bool() const
   return !err;
 }
 
-ServerSocket & ServerSocket::operator=(const ServerSocket &ss)
+ServerSocket& ServerSocket::operator=(const ServerSocket &ss)
 {
   if (ref != nullptr) (*ref)--;
   if (ref != nullptr && *ref == 0) {
@@ -83,6 +83,8 @@ ServerSocket & ServerSocket::operator=(const ServerSocket &ss)
   sock = ss.sock;
   ref = ss.ref;
   if (ref != nullptr) (*ref)++;
+
+  return *this;
 }
 
 Error ServerSocket::error() const

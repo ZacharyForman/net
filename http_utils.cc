@@ -20,7 +20,6 @@ enum State {
   ::std::map<::std::string, ::std::string> ret;
   State st = q1;
   ::std::string key, val;
-  char *start;
   while(*str || st == q5) {
     switch (st) {
       case q1: {
@@ -93,6 +92,7 @@ int get_header(Socket s, ::std::string &req)
 
     if (it != std::string::npos) return it;
   }
+  return total_len;
 }
 
 void read_remainder(Socket s, ::std::string &rem, int length)

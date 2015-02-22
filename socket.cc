@@ -117,6 +117,8 @@ Socket &Socket::operator=(const Socket &s)
   ref = s.ref;
   err = s.err;
   if (ref != nullptr) (*ref)++;
+
+  return *this;
 }
 
 Socket::Socket(int s, Error e)

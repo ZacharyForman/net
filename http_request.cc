@@ -51,7 +51,7 @@ Error HttpRequest::write_to_socket(Socket s) const
 Error HttpRequest::read_from_socket(Socket s)
 {
   ::std::string request;
-  int pos = internals::get_header(s, request);
+  internals::get_header(s, request);
   if (s.error() != OK) {
     return s.error();
   }
@@ -69,7 +69,7 @@ Error HttpRequest::read_from_socket(Socket s)
     return BAD_HEADERS;
   }
 
-  query = Query(request);
+  query = Query(path);
 
   const char *end;
   headers = read_headers(req, &end);

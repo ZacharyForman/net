@@ -11,6 +11,8 @@
 
 namespace net {
 
+// TODO: lazy matching => (make trie like thing)
+
 HttpServer::HttpServer(const HandlerMap &handlers,
                        Handler default_handler,
                        const Options &options)
@@ -39,9 +41,7 @@ Error HttpServer::error() const {
 
           request.read_from_socket(s);
 
-          Handler h = handlers.count(request.path)
-            ? handlers[request.path]
-            : default_handler;
+          Handler h = default_handler;
 
           HttpStatus response = h(request);
 

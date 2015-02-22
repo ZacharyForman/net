@@ -53,7 +53,7 @@ Error HttpStatus::read_from_socket(Socket s)
 {
   ::std::string stat;
   ::std::string statmsg;
-  int pos = internals::get_header(s, stat);
+  internals::get_header(s, stat);
   if (s.error() != OK) {
     return s.error();
   }

@@ -12,11 +12,13 @@
 namespace net {
 
 struct Query {
+  Query() = default;
+  explicit Query(const ::std::string &path);
+  ::std::string str() const;
+
   ::std::vector<::std::string> components;
   ::std::map<::std::string, ::std::string> parameters;
   ::std::string remainder;
-  explicit Query(::std::string path);
-  ::std::string str() const;
 };
 
 } // net
