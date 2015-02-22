@@ -5,6 +5,7 @@
 #error "Requires C++11 features"
 #else
 
+#include "path.h"
 #include "socket.h"
 
 #include <map>
@@ -28,7 +29,7 @@ public:
   Error read_from_socket(Socket s);
 
   ::std::string method;
-  ::std::string path;
+  Query query;
   ::std::map<::std::string, ::std::string> headers;
   ::std::string version;
   ::std::string msg;

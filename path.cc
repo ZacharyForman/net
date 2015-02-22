@@ -8,13 +8,12 @@
 
 namespace net {
 
-struct Query {
-  ::std::vector<::std::string> components;
-  ::std::map<::std::string, ::std::string> get_paramaters;
-  ::std::string remainder;
-};
+Query::Query(const ::std::string &path)
+{
 
-Query split_path(::std::string path)
+}
+
+::std::string Query::str() const
 {
 
 }

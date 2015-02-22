@@ -21,7 +21,7 @@ HttpRequest::HttpRequest(
     const ::std::string &version)
 {
   this->method = method;
-  this->path = path;
+  this->query = Query(path);
   this->headers = headers;
   this->msg = msg;
   this->version = version;
@@ -29,7 +29,7 @@ HttpRequest::HttpRequest(
 
 ::std::string HttpRequest::str() const {
   ::std::stringstream ret;
-  ret << method << " " << path << " " << version << "\r\n";
+  ret << method << " " << query.str() << " " << version << "\r\n";
   for (const auto &header : headers) {
     ret << header.first << ": " << header.second << "\r\n";
   }
@@ -55,7 +55,7 @@ Error HttpRequest::read_from_socket(Socket s)
   if (s.error() != OK) {
     return s.error();
   }
-
+  ::std::string path;
   const char *req = request.c_str();
   while (*req && *req != ' ') method += *req++;
   if (*req) req++;
@@ -68,6 +68,8 @@ Error HttpRequest::read_from_socket(Socket s)
   if (*req == 0) {
     return BAD_HEADERS;
   }
+
+  query = Query(request);
 
   const char *end;
   headers = read_headers(req, &end);
