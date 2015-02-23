@@ -8,6 +8,12 @@
 
 namespace net {
 
+namespace {
+
+
+
+} // internals
+
 FileServer::FileServer(const ::std::string &root)
 {
 
