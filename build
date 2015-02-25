@@ -1,6 +1,7 @@
 #!/bin/bash
 
 objects=""
+binaries=""
 rules=""
 
 for file in *.cc; do
@@ -12,20 +13,23 @@ for file in *.cc; do
   rules=$(printf '%s\n\n%s' "$rules" "$rule")
 done
 
-if [ -f makefile ]; then
-  echo "makefile already exists - stopping"
-  exit 1
-fi
+for file in examples/*.cc; do
+  binary="bin/${file/%cc/exe}"
+  binaries="$binaries $binary"
+  rule=$(printf '%s: %s %s\n\t%s %s %s %s' "$binary" "$file" '$(OBJ)' '$(CC) \
+       $(LINKFLAGS)' "$file" '$(OBJ)' "-o $binary")
+  rules=$(printf '%s\n\n%s' "$rules" "$rule")
+done
 
-echo 'CC=g++' >> makefile
+echo 'CC=g++' > makefile
 echo >> makefile
 echo 'CFLAGS=-Wall -c -std=c++11' >> makefile
+echo 'LINKFLAGS=-Wall -std=c++11' >> makefile
 echo >> makefile
 echo "OBJ=$objects" >> makefile
+echo "BIN=$binaries" >> makefile
 echo >> makefile
-printf '%s\n\n%s\n\t%s' 'all: $(OBJ)' 'clean:' 'rm -rf $(OBJ)' >> makefile
+printf '%s\n\n%s\n\t%s' 'all: $(OBJ) $(BIN)' 'clean:' 'rm -rf $(OBJ) $(BIN)' >> makefile
 echo "$rules" >> makefile
 
 make $1
-
-rm makefile
