@@ -154,6 +154,10 @@ Query::Query(const ::std::string &path)
             st = get_param_key_hex;
             break;
           }
+          case '+': {
+            key += ' ';
+            break;
+          }
           default: {
             key += *str;
             break;
@@ -208,6 +212,16 @@ Query::Query(const ::std::string &path)
             hex.clear();
             break;
           }
+          case '+': {
+            key += hex_to_char(hex);
+            if (hex.length() > 2) {
+              key += hex.substr(2);
+            }
+            hex.clear();
+            key += ' ';
+            st = get_param_key;
+            break;
+          }
           default: {
             key += hex_to_char(hex);
             if (hex.length() > 2) {
@@ -237,6 +251,10 @@ Query::Query(const ::std::string &path)
           case 0: {
             parameters[key] = val;
             return;
+          }
+          case '+': {
+            val += ' ';
+            break;
           }
           default: {
             val += *str;
@@ -299,6 +317,16 @@ Query::Query(const ::std::string &path)
               val += hex.substr(2);
             }
             hex.clear();
+            break;
+          }
+          case '+': {
+            val += hex_to_char(hex);
+            if (hex.length() > 2) {
+              val += hex.substr(2);
+            }
+            hex.clear();
+            val += ' ';
+            st = get_param_val;
             break;
           }
           default: {
