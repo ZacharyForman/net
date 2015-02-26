@@ -12,7 +12,13 @@ namespace net {
 namespace {
 
 enum State {
-  q0, q1, q2, q3, q4, q5, q6
+  start_state,
+  directory_char,
+  directory_separator,
+  get_param_key,
+  get_param_key_hex,
+  get_param_val,
+  get_param_val_hex
 };
 
 char hex_to_char(::std::string hex)
@@ -64,17 +70,17 @@ Query::Query(const ::std::string &path)
 {
   full_path = path;
   const char *str = path.c_str();
-  State st = q0;
+  State st = start_state;
   std::string component;
   std::string key;
   std::string val;
   std::string hex;
   for (;;) {
     switch (st) {
-      case q0: {
+      case start_state: {
         switch (*str) {
           case '/': {
-            st = q1;
+            st = directory_char;
             break;
           }
           default: {
@@ -83,7 +89,7 @@ Query::Query(const ::std::string &path)
         }
         break;
       }
-      case q1: {
+      case directory_char: {
         switch (*str) {
           case 0: {
             if (component.length()) {
@@ -97,7 +103,7 @@ Query::Query(const ::std::string &path)
               components.push_back(component);
               component.clear();
             }
-            st = q2;
+            st = directory_separator;
             break;
           }
           case '?': {
@@ -105,7 +111,7 @@ Query::Query(const ::std::string &path)
               components.push_back(component);
               component.clear();
             }
-            st = q3;
+            st = get_param_key;
             break;
           }
           default: {
@@ -115,7 +121,7 @@ Query::Query(const ::std::string &path)
         }
         break;
       }
-      case q2: {
+      case directory_separator: {
         switch (*str) {
           case 0: {
             return;
@@ -124,28 +130,28 @@ Query::Query(const ::std::string &path)
             break;
           }
           case '?': {
-            st = q3;
+            st = get_param_key;
             break;
           }
           default: {
             component += *str;
-            st = q1;
+            st = directory_char;
             break;
           }
         }
         break;
       }
-      case q3: {
+      case get_param_key: {
         switch (*str) {
           case 0: {
             return;
           }
           case '=': {
-            st = q5;
+            st = get_param_val;
             break;
           }
           case '%': {
-            st = q4;
+            st = get_param_key_hex;
             break;
           }
           default: {
@@ -155,7 +161,7 @@ Query::Query(const ::std::string &path)
         }
         break;
       }
-      case q4: {
+      case get_param_key_hex: {
         switch (*str) {
           case 0: {
             return;
@@ -191,7 +197,7 @@ Query::Query(const ::std::string &path)
               key += hex.substr(2);
             }
             hex.clear();
-            st = q4;
+            st = get_param_key_hex;
             break;
           }
           case '%': {
@@ -209,23 +215,23 @@ Query::Query(const ::std::string &path)
             }
             hex.clear();
             key += *str;
-            st = q3;
+            st = get_param_key;
             break;
           }
         }
         break;
       }
-      case q5: {
+      case get_param_val: {
         switch (*str) {
           case '%': {
-            st = q6;
+            st = get_param_val_hex;
             break;
           }
           case '&': {
             parameters[key] = val;
             key.clear();
             val.clear();
-            st = q3;
+            st = get_param_key;
             break;
           }
           case 0: {
@@ -239,7 +245,7 @@ Query::Query(const ::std::string &path)
         }
         break;
       }
-      case q6: {
+      case get_param_val_hex: {
         switch (*str) {
           case '1': // FALLTHROUGH
           case '2': // FALLTHROUGH
@@ -275,7 +281,7 @@ Query::Query(const ::std::string &path)
             parameters[key] = val;
             key.clear();
             val.clear();
-            st = q3;
+            st = get_param_key;
             break;
           }
           case 0: {
@@ -302,7 +308,7 @@ Query::Query(const ::std::string &path)
             }
             hex.clear();
             val += *str;
-            st = q5;
+            st = get_param_val;
             break;
           }
         }
