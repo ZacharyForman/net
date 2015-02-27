@@ -2,6 +2,7 @@
 
 #include "http_request.h"
 #include "http_server.h"
+#include "http_status.h"
 #include "path.h"
 #include "net_error.h"
 #include "serversocket.h"
@@ -9,6 +10,7 @@
 
 #include <future>
 #include <thread>
+#include <cstdio>
 
 namespace net {
 
@@ -17,31 +19,68 @@ namespace internals {
 namespace {
 
 struct Node {
-  Node(Handler h, bool b) : handler(h), capture_children(b) {}
+  const static Handler null_handler;
+  Node(Handler h = null_handler, bool b = false)
+    : handler(h), capture_children(b) {}
   Handler handler;
   bool capture_children;
-  ::std::map<::std::string, Node> children;
+  ::std::map<::std::string, Node> next;
+};
+
+const Handler Node::null_handler = {
+  [](HttpRequest r) {
+    return net::HttpStatus(500, "Internal Server Error", {},
+                           "500 Internal Server Error");
+  }
 };
 
 } // namespace
 
 class HandlerMap {
 public:
-  HandlerMap(HttpServer::HandlerConfiguration config, Handler default_handler);
+  HandlerMap(const HttpServer::HandlerConfiguration &onfig,
+             Handler default_handler);
   Handler get_handler(Query query) const;
 private:
   Node root;
+  Handler default_handler;
 };
 
-HandlerMap::HandlerMap(HttpServer::HandlerConfiguration config, Handler default_handler)
-  : root(default_handler, true)
+HandlerMap::HandlerMap(const HttpServer::HandlerConfiguration &config,
+                       Handler default_handler)
+  : root(Node::null_handler, false), default_handler(default_handler)
 {
-  // Populate node's children.
+  for (const auto &conf : config) {
+    Query query = Query(conf.first);
+    Node *n = &root;
+    for (const auto &s : query.components) {
+      n = &(n->next[s]);
+    }
+    n->handler = conf.second.first;
+    n->capture_children = conf.second.second;
+  }
 }
 
 Handler HandlerMap::get_handler(Query query) const
 {
-  return root.handler;
+  Handler h = (root.capture_children || !query.components.size()) ?
+      root.handler : default_handler;
+  const internals::Node *n = &root;
+  for (unsigned i = 0; i < query.components.size(); i++) {
+    printf("%s\n", query.components[i].c_str());
+    auto next = n->next.find(query.components[i]);
+    if (next == n->next.end()) {
+      printf("no next, exiting...\n");
+      return h;
+    }
+    n = &(next->second);
+    if (&n->handler != &Node::null_handler
+        && (n->capture_children || i == query.components.size() - 1)) {
+      printf("found good alternative, advancing handler...\n");
+      h = n->handler;
+    }
+  }
+  return h;
 }
 
 } // internals
