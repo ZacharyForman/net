@@ -10,7 +10,6 @@
 
 #include <future>
 #include <thread>
-#include <cstdio>
 
 namespace net {
 
@@ -70,13 +69,11 @@ Handler HandlerMap::get_handler(Query query) const
     printf("%s\n", query.components[i].c_str());
     auto next = n->next.find(query.components[i]);
     if (next == n->next.end()) {
-      printf("no next, exiting...\n");
       return h;
     }
     n = &(next->second);
     if (&n->handler != &Node::null_handler
         && (n->capture_children || i == query.components.size() - 1)) {
-      printf("found good alternative, advancing handler...\n");
       h = n->handler;
     }
   }
