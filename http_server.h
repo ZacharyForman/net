@@ -18,19 +18,25 @@
 
 namespace net {
 
+namespace internals {
+
+class HandlerMap;
+
+} // internals
+
 class HttpServer {
 public:
   struct Options;
-  typedef ::std::map<::std::string, Handler> HandlerMap;
-  HttpServer(const HandlerMap &handlers,
+  typedef ::std::map< ::std::string, ::std::pair<Handler, bool> >
+          HandlerConfiguration;
+  HttpServer(const HandlerConfiguration &handlers,
              Handler default_handler,
              const Options &options);
-  ~HttpServer() = default;
+  ~HttpServer();
   Error error() const;
   ::std::future<Error> start();
 private:
-  HandlerMap handlers;
-  Handler default_handler;
+  internals::HandlerMap *handlers;
   ServerSocket ss;
   Error err;
   bool die_on_error;

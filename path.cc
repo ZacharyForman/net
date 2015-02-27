@@ -24,7 +24,7 @@ enum State {
 char hex_to_char(::std::string hex)
 {
   char c = 0;
-  for (int i = 0; i < 2 && i < hex.length(); i++) {
+  for (unsigned i = 0; i < 2 && i < hex.length(); i++) {
     char d = hex[i];
     switch (d) {
       case '0': // FALLTHROUGH
