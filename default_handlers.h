@@ -6,6 +6,7 @@
 #else
 
 #include <string>
+#include <utility>
 
 #include "handler.h"
 #include "http_status.h"
@@ -15,10 +16,8 @@ namespace net {
 
 class FileServer {
 public:
-  explicit FileServer(const ::std::string &root);
-  HttpStatus operator()(HttpRequest request) const;
-private:
-  ::std::string root;
+  static ::std::pair< ::std::string, ::std::pair<Handler, bool> >
+      handle_path(::std::string url, ::std::string path, bool dir = true);
 };
 
 } // net
