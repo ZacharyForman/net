@@ -66,7 +66,6 @@ Handler HandlerMap::get_handler(Query query) const
       root.handler : default_handler;
   const internals::Node *n = &root;
   for (unsigned i = 0; i < query.components.size(); i++) {
-    printf("%s\n", query.components[i].c_str());
     auto next = n->next.find(query.components[i]);
     if (next == n->next.end()) {
       return h;
