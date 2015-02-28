@@ -9,8 +9,6 @@
 #include <sstream>
 #include <string>
 
-#include <cstdio>
-
 namespace net {
 
 namespace {
@@ -18,7 +16,7 @@ namespace {
 bool read_file(::std::string name, ::std::string *res)
 {
   ::std::ifstream f(name, ::std::ios::binary);
-  if (!f.is_open()) {
+  if (!f) {
     return false;
   }
   ::std::stringstream buf;
@@ -34,14 +32,20 @@ bool read_file(::std::string name, ::std::string *res)
                             ::std::string path,
                             bool dir)
 {
+  if (path[path.length()-1] != '/') {
+    path += '/';
+  }
   return {
     url, {
       [url, path](HttpRequest r) {
-        std::string path = r.query.path();
-        if (url == path) {
-          return net::HttpStatus(200, "Index", {}, "Index page...");
+        ::std::string query_path = r.query.path();
+        if (query_path.find("..") != ::std::string::npos) {
+          return net::HttpStatus(403, "FORBIDDEN", {});
         }
-        ::std::string file = path.substr(url.size()+1);
+        if (url == query_path) {
+          return net::HttpStatus(200, "OK", {}, "Index page...");
+        }
+        ::std::string file = query_path.substr(url.size()+1);
         ::std::string content;
         if (!read_file(path+file, &content)) {
           return net::HttpStatus(404, "NOT FOUND", {}, "file not found");
