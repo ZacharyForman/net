@@ -1,4 +1,4 @@
-#include "../default_handlers.h"
+#include "../fileserver.h"
 #include "../http_server.h"
 
 #include <cstdlib>
