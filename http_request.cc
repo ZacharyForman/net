@@ -41,8 +41,7 @@ HttpRequest::HttpRequest(
 Error HttpRequest::write_to_socket(Socket s) const
 {
   ::std::string msg = str();
-  int len = s.write(msg.c_str(), msg.length());
-  if (len < 0) {
+  if (s.write(msg.c_str(), msg.length()) < 0) {
     return s.error();
   }
   return OK;
@@ -55,6 +54,8 @@ Error HttpRequest::read_from_socket(Socket s)
   if (s.error() != OK) {
     return s.error();
   }
+
+  // Parse out the first line
   ::std::string path;
   const char *req = request.c_str();
   while (*req && *req != ' ') method += *req++;
@@ -65,12 +66,14 @@ Error HttpRequest::read_from_socket(Socket s)
   if (*req) req++;
   if (*req && *req == '\n') req++;
 
+  // If we didn't get an initial line, bail.
   if (*req == 0) {
     return BAD_HEADERS;
   }
 
   query = Query(path);
 
+  // Generate headers
   const char *end;
   headers = read_headers(req, &end);
 
@@ -83,6 +86,7 @@ Error HttpRequest::read_from_socket(Socket s)
     ::atoi(headers["Content-Length"].c_str()) - msg.length() :
     0;
 
+  // If there is remaining content, read it.
   if (remaining_length > 0) {
     internals::read_remainder(s, msg, remaining_length);
   }
