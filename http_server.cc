@@ -17,6 +17,7 @@ namespace internals {
 
 namespace {
 
+// Trie to allow for partial matching of paths.
 struct Node {
   const static Handler null_handler;
   Node(Handler h = null_handler, bool b = false)
@@ -26,6 +27,7 @@ struct Node {
   ::std::map<::std::string, Node> next;
 };
 
+// Analogous to a null pointer; offers some default behaviour.
 const Handler Node::null_handler = {
   [](HttpRequest r) {
     return net::HttpStatus(500, "Internal Server Error", {},
@@ -35,9 +37,11 @@ const Handler Node::null_handler = {
 
 } // namespace
 
+// Class that maps paths to handlers.
+// Allows for partial matching. See HandlerConfiguration for more details.
 class HandlerMap {
 public:
-  HandlerMap(const HttpServer::HandlerConfiguration &onfig,
+  HandlerMap(const HttpServer::HandlerConfiguration &config,
              Handler default_handler);
   Handler get_handler(Query query) const;
 private:
@@ -49,6 +53,7 @@ HandlerMap::HandlerMap(const HttpServer::HandlerConfiguration &config,
                        Handler default_handler)
   : root(Node::null_handler, false), default_handler(default_handler)
 {
+  // Insert each handler into the trie
   for (const auto &conf : config) {
     Query query = Query(conf.first);
     Node *n = &root;
@@ -71,6 +76,7 @@ Handler HandlerMap::get_handler(Query query) const
       return h;
     }
     n = &(next->second);
+    // If our node captures children / if it's the last node, keep the handler.
     if (&n->handler != &Node::null_handler
         && (n->capture_children || i == query.components.size() - 1)) {
       h = n->handler;
@@ -108,6 +114,7 @@ Error HttpServer::error() const {
       Socket s = ss.accept();
 
       if (s) {
+        // Start up a thread to handle the request
         ::std::thread([=]() {
           HttpRequest request;
 
