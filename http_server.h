@@ -24,9 +24,24 @@ class HandlerMap;
 
 } // internals
 
+// Utility class to serve a variety of functions (through the
+// Handler interface) over HTTP.
+// Construct the HttpServer using an initializer list for a
+// HandlerConfiguration
+// For example:
+// HttpServer s = HttpServer({
+//                {"/", {[](HttpRequest r) {
+//                        //...
+//                        return HttpStatus(...);
+//                      }, true}
+//                 }
+//              }, default_handler, options);
 class HttpServer {
 public:
+  // Options available to configure the server.
   struct Options;
+  // Mapping of path to handler. If the boolean is true,
+  // perform partial matching.
   typedef ::std::map< ::std::string, ::std::pair<Handler, bool> >
           HandlerConfiguration;
   HttpServer(const HandlerConfiguration &handlers,
@@ -36,7 +51,9 @@ public:
   Error error() const;
   ::std::future<Error> start();
 private:
+  // The handlers associated with this server.
   internals::HandlerMap *handlers;
+  // The listening socket.
   ServerSocket ss;
   Error err;
   bool die_on_error;
