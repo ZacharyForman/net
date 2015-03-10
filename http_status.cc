@@ -59,15 +59,19 @@ Error HttpStatus::read_from_socket(Socket s)
   }
 
   const char *req = stat.c_str();
+  // Parse out the version string
   while (*req && *req != ' ') version += *req++;
   if (*req) req++;
+  // Parse out the status code (e.g. 200)
   while (*req && *req != ' ') statmsg += *req++;
   status = ::atoi(statmsg.c_str());
   if (*req) req++;
+  // Parse out the reason (e.g. OK)
   while (*req && *req != '\r') reason += *req++;
   if (*req) req++;
   if (*req && *req == '\n') req++;
 
+  // String should not have ended
   if (*req == 0) {
     return BAD_HEADERS;
   }
@@ -86,10 +90,10 @@ Error HttpStatus::read_from_socket(Socket s)
   if (remaining_length > 0) {
     internals::read_remainder(s, msg, remaining_length);
   }
+
   if (s.error() != OK) {
     return s.error();
   }
-
   return OK;
 }
 
