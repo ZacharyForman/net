@@ -8,6 +8,7 @@ namespace net {
 
 namespace {
 
+// States used in read_headers
 enum State {
   q1, q2, q3, q4, q5
 };
@@ -73,10 +74,12 @@ err:
   *end = nullptr;
   return ret;
 }
+
 namespace internals {
 
 #define BUF_LEN 1024
 
+// Read headers from a socket
 int get_header(Socket s, ::std::string &req)
 {
   int total_len = 0;
@@ -95,6 +98,8 @@ int get_header(Socket s, ::std::string &req)
   return total_len;
 }
 
+// After reading headers, read what remains of the data
+// according to the content-length header.
 void read_remainder(Socket s, ::std::string &rem, int length)
 {
   char buf[BUF_LEN];
