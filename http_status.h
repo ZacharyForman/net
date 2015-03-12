@@ -12,9 +12,13 @@
 
 namespace net {
 
+// Essentially a value class that encapsulates a HTTP status response.
+// Contains a bunch of strings - try to pass by reference wherever possible.
 class HttpStatus {
 public:
   HttpStatus() = default;
+
+  // Constructs the HttpStatus with the given parameters.
   HttpStatus(int status, const ::std::string &reason,
              const ::std::map<::std::string, ::std::string> &headers,
              const ::std::string &msg = "",
@@ -23,7 +27,12 @@ public:
   HttpStatus(const HttpStatus &request) = default;
 
   ::std::string str() const;
+  
+  // Writes the HttpStatus to the given Socket, returning an Error if the Socket
+  // experiences an error. Returns OK on success.
   Error write_to_socket(Socket s) const;
+  // Reads the HttpStatus from the given Socket, returning an Error if the Socket
+  // experiences an error. Returns OK on success.
   Error read_from_socket(Socket s);
 
   int status;
