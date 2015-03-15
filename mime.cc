@@ -7,6 +7,9 @@
 
 namespace net {
 
+// Mapping of name to mime_type.
+// TODO(au.zachary.forman) Let consumer add mime types.
+// Possibly using a "MimeProvider" class or something.
 const ::std::map<::std::string, ::std::string> mime_types {
   // Binary data type
   {"bin", "application/octet-stream"},
