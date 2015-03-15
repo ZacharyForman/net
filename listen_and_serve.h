@@ -12,6 +12,8 @@
 
 namespace net {
 
+// Given a function like thing that takes a Socket as a parameter,
+// listen on the given port and call that function on it.
 template<typename Handler>
 ::std::future<Error> listen_and_serve(int port, int queue_length, Handler f)
 {
@@ -25,6 +27,7 @@ template<typename Handler>
     for (;;) {
       Socket s = ss.accept();
       if (s) {
+        // Handle the connection
         ::std::thread(f, s).detach();
       }
     }
