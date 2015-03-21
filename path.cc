@@ -21,6 +21,8 @@ enum State {
   get_param_val_hex
 };
 
+// Converts the given hex character (e.g. as in %20, without the %)
+// into the character it represents.
 char hex_to_char(::std::string hex)
 {
   char c = 0;
@@ -66,6 +68,7 @@ char hex_to_char(::std::string hex)
 
 } // namespace
 
+// Huge state machine to parse a query path.
 Query::Query(const ::std::string &path)
 {
   full_path = path;
