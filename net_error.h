@@ -9,8 +9,7 @@
 
 namespace net {
 
-const int PORT_MAX = 65535;
-
+// Error codes that can be returned from net's functions.
 enum Error {
   OK = 0,
   BAD,
@@ -30,6 +29,7 @@ enum Error {
   BAD_METHOD
 };
 
+// Extracts the current error from errno.
 Error net_err();
 
 } // net
